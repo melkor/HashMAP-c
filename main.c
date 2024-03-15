@@ -8,15 +8,15 @@ struct node {
 	node *previous;
 };
 
-typedef struct HashMAP HashMAP;
-struct HashMAP {
+typedef struct DoubleList DoubleList;
+struct DoubleList {
 	size_t size;
 	node *head;
 	node *tail;
 };
 
-HashMAP* hasmap_init()  {
-	HashMAP *map = malloc(sizeof *map);
+DoubleList* hasmap_init()  {
+	DoubleList *map = malloc(sizeof *map);
 	if (map == NULL) {
 		return map;
 	}
@@ -27,7 +27,7 @@ HashMAP* hasmap_init()  {
 	return map;
 }
 
-void hashmap_free(HashMAP *map) {
+void double_list_free(DoubleList *map) {
 	if (map != NULL) {
 		while (map->tail != NULL) {
 			node *previous = map->tail->previous;
@@ -38,7 +38,7 @@ void hashmap_free(HashMAP *map) {
 	}
 }
 
-void hashmap_dump(HashMAP *map) {
+void double_list_dump(DoubleList *map) {
 	if (map == NULL) {
 		return;
 	}
@@ -54,7 +54,7 @@ void hashmap_dump(HashMAP *map) {
 	printf("\n");
 }
 
-HashMAP* hashmap_append(HashMAP* map, int value) {
+DoubleList* double_list_append(DoubleList* map, int value) {
 	if (map == NULL) {
 		return NULL;
 	}
@@ -81,7 +81,7 @@ HashMAP* hashmap_append(HashMAP* map, int value) {
 	return map;
 }
 
-HashMAP* hashmap_prepend(HashMAP* map, int value) {
+DoubleList* double_list_prepend(DoubleList* map, int value) {
 	if (map == NULL) {
 		return NULL;
 	}
@@ -108,7 +108,7 @@ HashMAP* hashmap_prepend(HashMAP* map, int value) {
 	return map;
 }
 
-HashMAP* hashmap_insert(HashMAP* map, int value, int index) {
+DoubleList* double_list_insert(DoubleList* map, int value, int index) {
 	if (map == NULL) {
 		return NULL;
 	}
@@ -118,7 +118,7 @@ HashMAP* hashmap_insert(HashMAP* map, int value, int index) {
 	}
 
 	if (index == map->size) {
-		return hashmap_append(map, value);
+		return double_list_append(map, value);
 	}
 
 	node *node_to_replace = map->head;
@@ -132,7 +132,7 @@ HashMAP* hashmap_insert(HashMAP* map, int value, int index) {
 	}
 
 	if (!node_to_replace->previous) {
-		return hashmap_prepend(map, value);
+		return double_list_prepend(map, value);
 	}
 
 	node *node_to_append = malloc(sizeof *node_to_append);
@@ -152,7 +152,7 @@ HashMAP* hashmap_insert(HashMAP* map, int value, int index) {
 	return map;
 }
 
-HashMAP* hashmap_delete_at(HashMAP* map, int index) {
+DoubleList* double_list_delete_at(DoubleList* map, int index) {
 	if (map == NULL) {
 		return NULL;
 	}
@@ -184,72 +184,72 @@ HashMAP* hashmap_delete_at(HashMAP* map, int index) {
 int main() {
 	
 	printf("--- test prepend:\n");
-	HashMAP *test_prepend_map = hasmap_init();
+	DoubleList *test_prepend_map = hasmap_init();
 
-	hashmap_prepend(test_prepend_map, 5);
-	hashmap_prepend(test_prepend_map, 3);
-	hashmap_prepend(test_prepend_map, 9);
-	hashmap_dump(test_prepend_map);
+	double_list_prepend(test_prepend_map, 5);
+	double_list_prepend(test_prepend_map, 3);
+	double_list_prepend(test_prepend_map, 9);
+	double_list_dump(test_prepend_map);
 
-	hashmap_free(test_prepend_map);
+	double_list_free(test_prepend_map);
 
 	printf("--- test append:\n");
-	HashMAP *test_append_map = hasmap_init();
+	DoubleList *test_append_map = hasmap_init();
 
-	hashmap_append(test_append_map, 5);
-	hashmap_append(test_append_map, 7);
-	hashmap_append(test_append_map, 2);
-	hashmap_dump(test_append_map);
+	double_list_append(test_append_map, 5);
+	double_list_append(test_append_map, 7);
+	double_list_append(test_append_map, 2);
+	double_list_dump(test_append_map);
 
-	hashmap_free(test_append_map);
+	double_list_free(test_append_map);
 
 	printf("--- test append and prepend:\n");
-	HashMAP *test_map = hasmap_init();
+	DoubleList *test_map = hasmap_init();
 
-	hashmap_append(test_map, 5);
-	hashmap_prepend(test_map, 8);
-	hashmap_append(test_map, 7);
-	hashmap_prepend(test_map, 1);
-	hashmap_append(test_map, 2);
-	hashmap_dump(test_map);
+	double_list_append(test_map, 5);
+	double_list_prepend(test_map, 8);
+	double_list_append(test_map, 7);
+	double_list_prepend(test_map, 1);
+	double_list_append(test_map, 2);
+	double_list_dump(test_map);
 
-	hashmap_free(test_map);
+	double_list_free(test_map);
 
 	printf("--- test insert and remove:\n");
-	HashMAP *test_insert_map = hasmap_init();
+	DoubleList *test_insert_map = hasmap_init();
 
-	hashmap_append(test_insert_map, 5);
-	hashmap_append(test_insert_map, 7);
+	double_list_append(test_insert_map, 5);
+	double_list_append(test_insert_map, 7);
 
 	printf("insert 0 at position 0\n");
-	hashmap_insert(test_insert_map, 0, 0);
-	hashmap_dump(test_insert_map);
+	double_list_insert(test_insert_map, 0, 0);
+	double_list_dump(test_insert_map);
 
 	printf("insert 9 at position 2\n");
-	hashmap_insert(test_insert_map, 9, 2);
-	hashmap_dump(test_insert_map);
+	double_list_insert(test_insert_map, 9, 2);
+	double_list_dump(test_insert_map);
 	
 	printf("insert 1 at position 1\n");
-	hashmap_insert(test_insert_map, 1, 1);
-	hashmap_dump(test_insert_map);
+	double_list_insert(test_insert_map, 1, 1);
+	double_list_dump(test_insert_map);
 	
 	printf("insert 8 at position 3\n");
-	hashmap_insert(test_insert_map, 8, 3);
-	hashmap_dump(test_insert_map);
+	double_list_insert(test_insert_map, 8, 3);
+	double_list_dump(test_insert_map);
 	
 	printf("insert 6 at position 5\n");
-	hashmap_insert(test_insert_map, 6, 5);
-	hashmap_dump(test_insert_map);
+	double_list_insert(test_insert_map, 6, 5);
+	double_list_dump(test_insert_map);
 
 	printf("insert 8 after last element at position %lu\n", test_insert_map->size);
-	hashmap_insert(test_insert_map, 8, 7);
-	hashmap_dump(test_insert_map);
+	double_list_insert(test_insert_map, 8, 7);
+	double_list_dump(test_insert_map);
 
 	printf("delete node at position 3\n");
-	hashmap_delete_at(test_insert_map, 3);
-	hashmap_dump(test_insert_map);
+	double_list_delete_at(test_insert_map, 3);
+	double_list_dump(test_insert_map);
 
-	hashmap_free(test_insert_map);
+	double_list_free(test_insert_map);
 
 	return 0;
 }
