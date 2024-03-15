@@ -148,8 +148,36 @@ HashMAP* hashmap_insert(HashMAP* map, int value, int index) {
 	node_to_append->next = next_node;
 	next_node->previous = node_to_append;
 
-
 	map->size++;
+	return map;
+}
+
+HashMAP* hashmap_delete_at(HashMAP* map, int index) {
+	if (map == NULL) {
+		return NULL;
+	}
+
+	if (index > map->size) {
+		return NULL;
+	}
+
+	node *node_to_remove = map->head;
+	int i = 0;
+	while (i < index) {
+		if (!node_to_remove->next) {
+			return NULL;
+		}
+		node_to_remove= node_to_remove->next;
+		i++;
+	}
+	node *previous_node = node_to_remove->previous;
+	node *next_node = node_to_remove->next;
+
+	previous_node->next = next_node;
+	next_node->previous = previous_node;
+
+	free(node_to_remove);
+	map->size--;
 	return map;
 }
 
@@ -187,7 +215,7 @@ int main() {
 
 	hashmap_free(test_map);
 
-	printf("--- test insert:\n");
+	printf("--- test insert and remove:\n");
 	HashMAP *test_insert_map = hasmap_init();
 
 	hashmap_append(test_insert_map, 5);
@@ -215,6 +243,10 @@ int main() {
 
 	printf("insert 8 after last element at position %lu\n", test_insert_map->size);
 	hashmap_insert(test_insert_map, 8, 7);
+	hashmap_dump(test_insert_map);
+
+	printf("delete node at position 3\n");
+	hashmap_delete_at(test_insert_map, 3);
 	hashmap_dump(test_insert_map);
 
 	hashmap_free(test_insert_map);
