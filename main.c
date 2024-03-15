@@ -1,10 +1,11 @@
+#include <stdio.h>
 #include <stdlib.h>
 
 typedef struct node node;
 struct node {
 	int value;
-	node *next_node;
-	node *previous_node;
+	node *next;
+	node *previous;
 };
 
 typedef struct HashMAP HashMAP;
@@ -28,12 +29,67 @@ HashMAP* hasmap_init(size_t size)  {
 
 void hashmap_free(HashMAP *map) {
 	if (map != NULL) {
+		while (map->tail != NULL) {
+			node *previous = map->tail->previous;
+			free(map->tail);
+			map->tail = previous;
+		}
 		free(map);
 	}
 }
 
+void hashmap_dump(HashMAP *map) {
+	if (map == NULL) {
+		return;
+	}
+
+	node *current_node = map->head;
+	while (current_node) {
+		printf("%d", current_node->value);
+		if (current_node->next) {
+			printf(" > ");
+		}
+		current_node = current_node->next;
+	}
+	printf("\n");
+}
+
+HashMAP* hashmap_append(HashMAP* map, int value) {
+	if (map == NULL) {
+		return map;
+	}
+
+	node *node_to_append = malloc(sizeof *node_to_append);
+	if (node_to_append == NULL) {
+		return map;
+	}
+	
+	node_to_append->value = value;
+	node_to_append->next = NULL;
+	node_to_append->previous = map->tail;
+
+	if (map->tail) {
+		map->tail->next = node_to_append;
+	}
+	
+	map->tail = node_to_append;
+
+	if (!map->head) {
+		map->head = node_to_append;
+	}
+	return map;
+}
+
 int main() {
+	
 	HashMAP *map = hasmap_init(10);
+
+	hashmap_append(map, 5);
+	hashmap_append(map, 7);
+	hashmap_append(map, 2);
+
+	hashmap_dump(map);
+
 	hashmap_free(map);
 	return 0;
 }
