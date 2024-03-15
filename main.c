@@ -15,13 +15,13 @@ struct HashMAP {
 	node *tail;
 };
 
-HashMAP* hasmap_init(size_t size)  {
+HashMAP* hasmap_init()  {
 	HashMAP *map = malloc(sizeof *map);
 	if (map == NULL) {
 		return map;
 	}
 
-	map->size = size;
+	map->size = 0;
 	map->head = NULL;
 	map->tail = NULL;
 	return map;
@@ -77,6 +77,7 @@ HashMAP* hashmap_append(HashMAP* map, int value) {
 	if (!map->head) {
 		map->head = node_to_append;
 	}
+	map->size++;
 	return map;
 }
 
@@ -103,32 +104,43 @@ HashMAP* hashmap_prepend(HashMAP* map, int value) {
 	if (!map->tail) {
 		map->tail = node_to_append;
 	}
+	map->size++;
 	return map;
 }
 
 int main() {
 	
-	// test only prepend
-	HashMAP *test_prepend_map = hasmap_init(10);
+	printf("--- test prepend:\n");
+	HashMAP *test_prepend_map = hasmap_init();
 
 	hashmap_prepend(test_prepend_map, 5);
 	hashmap_prepend(test_prepend_map, 3);
 	hashmap_prepend(test_prepend_map, 9);
-
 	hashmap_dump(test_prepend_map);
 
 	hashmap_free(test_prepend_map);
 
-	// test only append
-	HashMAP *test_append_map = hasmap_init(10);
+	printf("--- test append:\n");
+	HashMAP *test_append_map = hasmap_init();
 
 	hashmap_append(test_append_map, 5);
 	hashmap_append(test_append_map, 7);
 	hashmap_append(test_append_map, 2);
-
 	hashmap_dump(test_append_map);
 
 	hashmap_free(test_append_map);
+
+	printf("--- test append and prepend:\n");
+	HashMAP *test_map = hasmap_init();
+
+	hashmap_append(test_map, 5);
+	hashmap_prepend(test_map, 8);
+	hashmap_append(test_map, 7);
+	hashmap_prepend(test_map, 1);
+	hashmap_append(test_map, 2);
+	hashmap_dump(test_map);
+
+	hashmap_free(test_map);
 
 	return 0;
 }
