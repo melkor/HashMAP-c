@@ -56,12 +56,12 @@ void hashmap_dump(HashMAP *map) {
 
 HashMAP* hashmap_append(HashMAP* map, int value) {
 	if (map == NULL) {
-		return map;
+		return NULL;
 	}
 
 	node *node_to_append = malloc(sizeof *node_to_append);
 	if (node_to_append == NULL) {
-		return map;
+		return NULL;
 	}
 	
 	node_to_append->value = value;
@@ -83,12 +83,12 @@ HashMAP* hashmap_append(HashMAP* map, int value) {
 
 HashMAP* hashmap_prepend(HashMAP* map, int value) {
 	if (map == NULL) {
-		return map;
+		return NULL;
 	}
 
 	node *node_to_append = malloc(sizeof *node_to_append);
 	if (node_to_append == NULL) {
-		return map;
+		return NULL;
 	}
 	
 	node_to_append->value = value;
@@ -104,6 +104,51 @@ HashMAP* hashmap_prepend(HashMAP* map, int value) {
 	if (!map->tail) {
 		map->tail = node_to_append;
 	}
+	map->size++;
+	return map;
+}
+
+HashMAP* hashmap_insert(HashMAP* map, int value, int index) {
+	if (map == NULL) {
+		return NULL;
+	}
+
+	if (index > map->size) {
+		return NULL;
+	}
+
+	if (index == map->size) {
+		return hashmap_append(map, value);
+	}
+
+	node *node_to_replace = map->head;
+	int i = 0;
+	while (i < index) {
+		if (!node_to_replace->next) {
+			return NULL;
+		}
+		node_to_replace= node_to_replace->next;
+		i++;
+	}
+
+	if (!node_to_replace->previous) {
+		return hashmap_prepend(map, value);
+	}
+
+	node *node_to_append = malloc(sizeof *node_to_append);
+	if (node_to_append == NULL) {
+		return NULL;
+	}
+	node *previous_node = node_to_replace->previous;
+	node *next_node = previous_node->next;
+	node_to_append->value = value;
+
+	previous_node->next = node_to_append;
+	node_to_append->previous = previous_node;
+	node_to_append->next = next_node;
+	next_node->previous = node_to_append;
+
+
 	map->size++;
 	return map;
 }
@@ -141,6 +186,38 @@ int main() {
 	hashmap_dump(test_map);
 
 	hashmap_free(test_map);
+
+	printf("--- test insert:\n");
+	HashMAP *test_insert_map = hasmap_init();
+
+	hashmap_append(test_insert_map, 5);
+	hashmap_append(test_insert_map, 7);
+
+	printf("insert 0 at position 0\n");
+	hashmap_insert(test_insert_map, 0, 0);
+	hashmap_dump(test_insert_map);
+
+	printf("insert 9 at position 2\n");
+	hashmap_insert(test_insert_map, 9, 2);
+	hashmap_dump(test_insert_map);
+	
+	printf("insert 1 at position 1\n");
+	hashmap_insert(test_insert_map, 1, 1);
+	hashmap_dump(test_insert_map);
+	
+	printf("insert 8 at position 3\n");
+	hashmap_insert(test_insert_map, 8, 3);
+	hashmap_dump(test_insert_map);
+	
+	printf("insert 6 at position 5\n");
+	hashmap_insert(test_insert_map, 6, 5);
+	hashmap_dump(test_insert_map);
+
+	printf("insert 8 after last element at position %lu\n", test_insert_map->size);
+	hashmap_insert(test_insert_map, 8, 7);
+	hashmap_dump(test_insert_map);
+
+	hashmap_free(test_insert_map);
 
 	return 0;
 }
