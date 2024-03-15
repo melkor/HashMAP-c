@@ -80,16 +80,55 @@ HashMAP* hashmap_append(HashMAP* map, int value) {
 	return map;
 }
 
+HashMAP* hashmap_prepend(HashMAP* map, int value) {
+	if (map == NULL) {
+		return map;
+	}
+
+	node *node_to_append = malloc(sizeof *node_to_append);
+	if (node_to_append == NULL) {
+		return map;
+	}
+	
+	node_to_append->value = value;
+	node_to_append->next = map->head;
+	node_to_append->previous = NULL;
+
+	if (map->head) {
+		map->head->previous = node_to_append;
+	}
+	
+	map->head = node_to_append;
+
+	if (!map->tail) {
+		map->tail = node_to_append;
+	}
+	return map;
+}
+
 int main() {
 	
-	HashMAP *map = hasmap_init(10);
+	// test only prepend
+	HashMAP *test_prepend_map = hasmap_init(10);
 
-	hashmap_append(map, 5);
-	hashmap_append(map, 7);
-	hashmap_append(map, 2);
+	hashmap_prepend(test_prepend_map, 5);
+	hashmap_prepend(test_prepend_map, 3);
+	hashmap_prepend(test_prepend_map, 9);
 
-	hashmap_dump(map);
+	hashmap_dump(test_prepend_map);
 
-	hashmap_free(map);
+	hashmap_free(test_prepend_map);
+
+	// test only append
+	HashMAP *test_append_map = hasmap_init(10);
+
+	hashmap_append(test_append_map, 5);
+	hashmap_append(test_append_map, 7);
+	hashmap_append(test_append_map, 2);
+
+	hashmap_dump(test_append_map);
+
+	hashmap_free(test_append_map);
+
 	return 0;
 }
