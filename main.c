@@ -181,6 +181,30 @@ DoubleList* double_list_delete_at(DoubleList* map, int index) {
 	return map;
 }
 
+DoubleList* double_list_delete_value(DoubleList* map, int value) {
+	if (map == NULL) {
+		return NULL;
+	}
+
+	node *current_node = map->head;
+	while (current_node) {
+		node *next_node = current_node->next;
+		if (current_node->value == value) {
+			if (current_node->previous) {
+				current_node->previous->next = next_node;
+				if (next_node) {
+					next_node->previous = current_node->previous;
+				}
+			}
+			free(current_node);
+			map->size--;
+		}
+		current_node = next_node;
+	}
+	return map;
+}
+
+
 int main() {
 	
 	printf("--- test prepend:\n");
@@ -247,6 +271,14 @@ int main() {
 
 	printf("delete node at position 3\n");
 	double_list_delete_at(test_insert_map, 3);
+	double_list_dump(test_insert_map);
+
+	printf("delete value 3\n");
+	double_list_insert(test_insert_map, 3, 3);
+	double_list_insert(test_insert_map, 3, 5);
+	double_list_insert(test_insert_map, 3, 7);
+	double_list_dump(test_insert_map);
+	double_list_delete_value(test_insert_map, 3);
 	double_list_dump(test_insert_map);
 
 	double_list_free(test_insert_map);
