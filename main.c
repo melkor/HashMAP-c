@@ -204,6 +204,22 @@ DoubleList* double_list_delete_value(DoubleList* map, int value) {
 	return map;
 }
 
+node* double_list_find(DoubleList* map, int value) {
+	if (map == NULL) {
+		return NULL;
+	}
+
+	node *current_node = map->head;
+	node *return_node = NULL;
+	while (current_node && !return_node) {
+		if (current_node->value == value) {
+			break;
+		}
+		current_node = current_node->next;
+	}
+	return current_node;
+}
+
 
 int main() {
 	
@@ -281,7 +297,17 @@ int main() {
 	double_list_delete_value(test_insert_map, 3);
 	double_list_dump(test_insert_map);
 
+	
+	printf("get node with value 5\n");
+	node *test_node = double_list_find(test_insert_map, 5);
+	if (test_node) {
+		printf("node next: %d\n", test_node->next->value);
+		printf("node previous: %d\n", test_node->previous->value);
+	}
+
 	double_list_free(test_insert_map);
+
+
 
 	return 0;
 }
