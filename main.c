@@ -204,20 +204,28 @@ DoubleList* double_list_delete_value(DoubleList* map, int value) {
 	return map;
 }
 
-node* double_list_find(DoubleList* map, int value) {
+node** double_list_find(DoubleList* map, int value) {
 	if (map == NULL) {
 		return NULL;
 	}
 
 	node *current_node = map->head;
-	node *return_node = NULL;
-	while (current_node && !return_node) {
+	node **return_nodes = NULL;
+	int index = 0;
+	while (current_node) {
 		if (current_node->value == value) {
-			break;
+			if (!return_nodes) {
+				return_nodes = malloc(sizeof(**return_nodes));
+			} else {
+				return_nodes = realloc(return_nodes, index * sizeof(**return_nodes));
+			}
+			return_nodes[index] = current_node;
+			index++;
 		}
 		current_node = current_node->next;
 	}
-	return current_node;
+	return_nodes[index] = NULL;
+	return return_nodes;
 }
 
 
@@ -289,25 +297,28 @@ int main() {
 	double_list_delete_at(test_insert_map, 3);
 	double_list_dump(test_insert_map);
 
-	printf("delete value 3\n");
+	printf("insert multiple value 3\n");
 	double_list_insert(test_insert_map, 3, 3);
 	double_list_insert(test_insert_map, 3, 5);
 	double_list_insert(test_insert_map, 3, 7);
 	double_list_dump(test_insert_map);
-	double_list_delete_value(test_insert_map, 3);
-	double_list_dump(test_insert_map);
 
-	
-	printf("get node with value 5\n");
-	node *test_node = double_list_find(test_insert_map, 5);
+	printf("get nodes with value 3\n");
+	node **test_node = double_list_find(test_insert_map, 3);
 	if (test_node) {
-		printf("node next: %d\n", test_node->next->value);
-		printf("node previous: %d\n", test_node->previous->value);
+		int index = 0;
+		while (test_node[index]) {
+			printf("find:\n");
+			printf("%d > %d > %d\n", test_node[index]->previous->value, 3, test_node[index]->next->value);
+			index++;
+		}
+		free(test_node);
 	}
 
+	printf("delete value 3\n");
+	double_list_delete_value(test_insert_map, 3);
+	double_list_dump(test_insert_map);
+	
 	double_list_free(test_insert_map);
-
-
-
 	return 0;
 }
